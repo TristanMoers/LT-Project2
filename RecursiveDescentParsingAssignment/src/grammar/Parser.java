@@ -25,95 +25,82 @@ public class Parser {
 	* E' -> u T
 	* E' -> n T
 	* E' -> - T 
+	* E' -> ε
 	* T  -> S T'
 	* T  -> ( E ) T' 
 	* T' -> c T'
 	* T' -> ε
 	* S  -> id 
 	*/
-  
-	public boolean parseE(String[] input) {
-		System.out.println("parse E  : "+i+" "+input[i]);
+
+
+	public boolean parse(String[] input) {
+		i = 0;
+		return parseE(input) && i == input.length;
+	}
+
+
+	private boolean parseE(String[] input) {
 		if(i >= input.length) 
 			return false;
 		return parseT(input) && parseEPrime(input);
 	}
-	 
-	public boolean parseEPrime(String[] input) {
-		System.out.println("parse E' : "+i+" "+input[i]);
-		if(i >= input.length) 
-			return false;
-		if(input[i].equals(Grammar.UNION) || input[i].equals(Grammar.INTERSECTION) || input[i].equals(Grammar.SUBSTRACTION)) {
-			i++;
-			return parseT(input);
-		}
-		return false;
-		
-	}
-	  
-	
-	public boolean parseT(String[] input) {
+
+
+	private boolean parseT(String[] input) {
 		boolean temp = false;
-		System.out.println("parse T  : "+i+" "+input[i]);
 		if (i >= input.length) 
 			return false;
 		if(input[i].equals(Grammar.LEFTPAR)) {
 			i++;
 			if(parseE(input)) {
-				//System.out.println("Mark2 : "+i);
 				if (i >= input.length) 
 					return false;
 				if (input[i].equals(Grammar.RIGHTPAR)) {
 					i++;
-					temp = parseTPrime(input);
+					temp = true;
 				}
 			}
-		} else {
+		} 
+		else
 			temp = parseS(input);
-		}
-		boolean c = temp && parseTPrime(input);
-		return c;
+		return temp && parseTPrime(input);
 	}
-		  
-	public boolean parseTPrime(String[] input) {
-		System.out.println("parse T' : "+i+" "+input[i]);
-		if (i >= input.length) 
+
+
+	private boolean parseEPrime(String[] input) {
+		if(i > input.length) 
+			return false;
+		else if(i == input.length)
+			return true;
+		if(input[i].equals(Grammar.UNION) || input[i].equals(Grammar.INTERSECTION) || input[i].equals(Grammar.SUBSTRACTION)) {
+			i++;
+			return parseT(input);
+		}
+		return true;
+	}
+
+
+	private boolean parseTPrime(String[] input) {
+		if (i > input.length) 
+			return false;
+		else if(i == input.length)
 			return true;
 		if(input[i].equals(Grammar.COMPLEMENT)) {
 			i++;
 			return parseTPrime(input);
 		}
-		i++;
 		return true;
 	}
-	
-	public boolean parseS(String[] input) {
-		System.out.println("parse S  : "+i+" "+input[i]);
+
+
+	private boolean parseS(String[] input) {
 		if (i >= input.length) 
 			return false;
 		if (input[i].equals(Grammar.SETID)) {
 			i++;
 			return true;
-		}else
-			return false;
+		}
+		return false;
 	}
-	
- 
-	public boolean parse(String[] input) {
-		i = 0;
-		return parseE(input) && i == input.length;
-	}
-	
-	
-	
-	 
-	public static void main(String[] args) {
-		Generator g = new Generator(40);
-		String[] tokens = g.generate(4);
-		System.out.println(Arrays.toString(tokens));
-		Parser p = new Parser();
-		System.out.println(p.parse(tokens));
-
-	}
-		
 } 
