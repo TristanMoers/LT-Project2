@@ -186,6 +186,7 @@ TOKEN:
 | < MINUS: "-" >
 | < PLUS_ASSIGN: "+=" >
 | < STAR: "*" >
+| < SHIFT: ">>>" >
 }
 
 // Separators (these could be combined with the reserved words)
@@ -1224,8 +1225,8 @@ private JExpression equalityExpression(): {
  * Parse a relational expression.
  * 
  * <pre>
- *   relationalExpression ::= additiveExpression  // level 5
- *                              [(GT | LE) additiveExpression 
+ *   relationalExpression ::= shiftExpression  // level 5
+ *                              [(GT | LE) shiftExpression 
  *                              | INSTANCEOF referenceType]
  * </pre>
  * 
@@ -1239,18 +1240,48 @@ private JExpression relationalExpression(): {
 }
 {
     try {
-        lhs = additiveExpression() { line = lhs.line(); }
+        lhs = shiftExpression() { line = lhs.line(); }
         [ 
             <GT> 
-            rhs = additiveExpression()
+            rhs = shiftExpression()
             { lhs = new JGreaterThanOp( line, lhs, rhs ); } |
             <LE> 
-            rhs = additiveExpression()
+            rhs = shiftExpression()
             { lhs = new JLessEqualOp( line, lhs, rhs ); } |
             <INSTANCEOF> 
             type = referenceType()
             { lhs = new JInstanceOfOp( line, lhs, type ); }
         ]
+    } 
+    catch ( ParseException e ) { 
+        recoverFromError( new int[] { SEMI, EOF }, e ); 
+    }
+    { return lhs; }
+}
+
+/**
+ * Parse an shift expression.
+ * 
+ * <pre>
+ *   shiftExpression ::= additiveExpression  // level 4
+ *                            {SHIFT additiveExpression}
+ * </pre>
+ * 
+ * @return an AST for an shiftExpression.
+ */
+
+private JExpression shiftExpression(): {
+    int line = 0;
+    JExpression lhs = null, rhs = null;
+}
+{
+    try {
+        lhs = additiveExpression() { line = lhs.line(); }
+        ( 
+            <SHIFT> 
+            rhs = additiveExpression()
+            { lhs = new JShiftOp( line, lhs, rhs ); }
+        )*
     } 
     catch ( ParseException e ) { 
         recoverFromError( new int[] { SEMI, EOF }, e ); 
