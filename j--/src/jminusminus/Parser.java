@@ -1101,7 +1101,7 @@ public class Parser {
         JExpression lhs = additiveExpression();
         while (more) {
 	        if (have(SHIFT)) {
-	            return new JShiftOp(line, lhs, additiveExpression());
+	            lhs =  new JShiftOp(line, lhs, additiveExpression());
 	        } else {
 	            more = false;
 	        }
