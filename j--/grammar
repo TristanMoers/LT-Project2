@@ -81,6 +81,9 @@ equalityExpression ::= relationalExpression  // level 6
 relationalExpression ::= additiveExpression       // level 5
                            [(GT | LE) additiveExpression
                            | INSTANCEOF referenceType]
+                           
+shiftExpression ::= additiveExpression   // level 4
+						{SHIFT additiveExpression}
 
 additiveExpression ::= multiplicativeExpression // level 3
                          {(PLUS | MINUS) multiplicativeExpression}

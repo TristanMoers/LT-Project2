@@ -182,6 +182,15 @@ class Scanner {
             }
         case '>':
             nextCh();
+            if (ch == '>') {
+            	nextCh();
+            	if(ch == '>') {
+            		nextCh();
+            		return new TokenInfo(SHIFT, line);
+            	}
+                reportScannerError("Operator >> is not supported in j--.");
+                return getNextToken();
+            }
             return new TokenInfo(GT, line);
         case '<':
             nextCh();
