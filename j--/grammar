@@ -88,22 +88,22 @@ bitwiseAndExpression ::= equalityExpression // level 8
 							{AND equalityExpression}
 
 equalityExpression ::= relationalExpression  // level 6
-                         {EQUAL relationalExpression}
+                         {(EQUAL | NE) relationalExpression}
 
 relationalExpression ::= additiveExpression       // level 5
-                           [(GT | LE) additiveExpression
+                           [(GT | LT | GE | LE) additiveExpression
                            | INSTANCEOF referenceType]
                            
 shiftExpression ::= additiveExpression   // level 4
-						{SHIFT additiveExpression}
+						{(SHIFT | LSHIFT | RSHIFT) additiveExpression}
 
 additiveExpression ::= multiplicativeExpression // level 3
                          {(PLUS | MINUS) multiplicativeExpression}
 
 multiplicativeExpression ::= unaryExpression       // level 2
-                               {STAR unaryExpression}
+                               {(STAR | DIV | MOD) unaryExpression}
 
-unaryExpression ::= INC unaryExpression  // level 1
+unaryExpression ::= (INC | DEC) unaryExpression  // level 1
                   | MINUS unaryExpression
                   | simpleUnaryExpression
 
@@ -114,7 +114,7 @@ simpleUnaryExpression ::= LNOT unaryExpression
                           RPAREN simpleUnaryExpression
                         | postfixExpression 
 
-postfixExpression ::= primary {selector} {DEC}
+postfixExpression ::= primary {selector} {INC | DEC}
 
 selector ::= DOT qualifiedIdentifier [arguments]
            | LBRACK expression RBRACK

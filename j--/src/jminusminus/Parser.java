@@ -1151,6 +1151,8 @@ public class Parser {
         while (more) {
             if (have(EQUAL)) {
                 lhs = new JEqualOp(line, lhs, relationalExpression());
+            } else if (have(NE)) {
+                lhs = new JNotEqualOp(line, lhs, relationalExpression());
             } else {
                 more = false;
             }
@@ -1177,6 +1179,10 @@ public class Parser {
             return new JGreaterThanOp(line, lhs, shiftExpression());
         } else if (have(LE)) {
             return new JLessEqualOp(line, lhs, shiftExpression());
+        } else if (have(GE)) {
+            return new JGreaterEqualOp(line, lhs, shiftExpression());
+        } else if (have(LT)) {
+            return new JLessThanOp(line, lhs, shiftExpression());
         } else if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
         } else {
@@ -1189,7 +1195,7 @@ public class Parser {
      * 
      * <pre>
      *   shiftExpression ::= additiveExpression  // level 4
-     *                          {SHIFT additiveExpression}
+     *                          {(SHIFT | RSHIFT | LSHIFT) additiveExpression}
      * </pre>
      * 
      * @return an AST for a shiftExpression.
@@ -1202,6 +1208,10 @@ public class Parser {
         while (more) {
 	        if (have(SHIFT)) {
 	            lhs =  new JShiftOp(line, lhs, additiveExpression());
+	        } else if (have(RSHIFT)) {
+		            lhs =  new JRShiftOp(line, lhs, additiveExpression());
+	        } else if (have(LSHIFT)) {
+	            lhs =  new JLShiftOp(line, lhs, additiveExpression());
 	        } else {
 	            more = false;
 	        }
@@ -1241,25 +1251,31 @@ public class Parser {
      * 
      * <pre>
      *   multiplicativeExpression ::= unaryExpression  // level 2
-     *                                  {STAR unaryExpression}
+     *                                  {(STAR | DIV)unaryExpression}
      * </pre>
      * 
      * @return an AST for a multiplicativeExpression.
      */
 
-    private JExpression multiplicativeExpression() {
-        int line = scanner.token().line();
-        boolean more = true;
-        JExpression lhs = unaryExpression();
-        while (more) {
-            if (have(STAR)) {
-                lhs = new JMultiplyOp(line, lhs, unaryExpression());
-            } else {
-                more = false;
-            }
-        }
-        return lhs;
-    }
+    private JExpression multiplicativeExpression() { 
+    	int line = scanner.token().line();
+    	boolean more = true;
+    	JExpression lhs = unaryExpression ();
+    	while (more) {
+    		if (have(STAR)) {
+    			lhs = new JMultiplyOp(line, lhs, unaryExpression ());
+    		}
+    		else if (have(DIV)) {
+    			lhs = new JDivideOp(line, lhs, unaryExpression ());
+    		}
+    		else if (have(MOD)) {
+    			lhs = new JModOp(line, lhs, unaryExpression ());
+    		}
+    		else {
+    			more = false; }
+    		}
+    	return lhs;
+}
 
     /**
      * Parse an unary expression.
@@ -1277,6 +1293,8 @@ public class Parser {
         int line = scanner.token().line();
         if (have(INC)) {
             return new JPreIncrementOp(line, unaryExpression());
+        }else if (have(DEC)) {
+            return new JPreDecrementOp(line, unaryExpression());
         } else if (have(MINUS)) {
             return new JNegateOp(line, unaryExpression());
         } else {
@@ -1333,8 +1351,17 @@ public class Parser {
         while (see(DOT) || see(LBRACK)) {
             primaryExpr = selector(primaryExpr);
         }
-        while (have(DEC)) {
-            primaryExpr = new JPostDecrementOp(line, primaryExpr);
+        boolean more = true;
+        while (more) {
+        	if(have(DEC)) {
+        		primaryExpr = new JPostDecrementOp(line, primaryExpr);
+        	}
+        	else if(have(INC)) {
+        		primaryExpr = new JPostIncrementOp(line, primaryExpr);
+        	}
+        	else {
+        		more = false;
+        	}
         }
         return primaryExpr;
     }

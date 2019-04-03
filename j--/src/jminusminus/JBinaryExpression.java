@@ -255,6 +255,53 @@ class JMultiplyOp extends JBinaryExpression {
 
 }
 
+
+class JDivideOp extends JBinaryExpression {
+	
+	public JDivideOp(int line, JExpression lhs, JExpression rhs) {
+		super(line, "/", lhs, rhs); 
+	}
+	
+	public JExpression analyze(Context context) { 
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+	
+	public void codegen(CLEmitter output) {
+		lhs.codegen(output); 
+		rhs.codegen(output);
+		output.addNoArgInstruction(IDIV);
+	}
+}
+
+
+class JModOp extends JBinaryExpression {
+	
+	public JModOp(int line, JExpression lhs, JExpression rhs) {
+		super(line, "%", lhs, rhs); 
+	}
+	
+	public JExpression analyze(Context context) { 
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+	
+	public void codegen(CLEmitter output) {
+		lhs.codegen(output); 
+		rhs.codegen(output);
+		output.addNoArgInstruction(IREM);
+	}
+}
+
+
 class JOrOp extends JBinaryExpression {
 	public JOrOp(int line, JExpression lhs, JExpression rhs ) {
 		super(line, "|", lhs, rhs);
@@ -378,3 +425,120 @@ class JShiftOp extends JBinaryExpression {
     }
 
 }
+
+/**
+ * The AST node for a right shift (>>) expression.
+ */
+
+class JRShiftOp extends JBinaryExpression {
+
+    /**
+     * Construct an AST for a right shift expression given its line number,
+     * and the lhs and rhs operands.
+     * 
+     * @param line
+     *            line in which the shift expression occurs in the
+     *            source file.
+     * @param lhs
+     *            the lhs operand.
+     * @param rhs
+     *            the rhs operand.
+     */
+
+    public JRShiftOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, ">>", lhs, rhs);
+    }
+
+    /**
+     * Analyzing the >> operation involves analyzing its operands, checking
+     * types, and determining the result type.
+     * 
+     * @param context
+     *            context in which names are resolved.
+     * @return the analyzed (and possibly rewritten) AST subtree.
+     */
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.INT);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
+        return this;
+    }
+
+    /**
+     * Generating code for the >> operation involves generating code for the two
+     * operands, and then the shift instruction.
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
+     */
+
+    public void codegen(CLEmitter output) {
+        lhs.codegen(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(ISHR);
+    }
+
+}
+
+/**
+ * The AST node for a left shift (<<) expression.
+ */
+
+class JLShiftOp extends JBinaryExpression {
+
+    /**
+     * Construct an AST for a left shift expression given its line number,
+     * and the lhs and rhs operands.
+     * 
+     * @param line
+     *            line in which the shift expression occurs in the
+     *            source file.
+     * @param lhs
+     *            the lhs operand.
+     * @param rhs
+     *            the rhs operand.
+     */
+
+    public JLShiftOp(int line, JExpression lhs, JExpression rhs) {
+        super(line, "<<", lhs, rhs);
+    }
+
+    /**
+     * Analyzing the << operation involves analyzing its operands, checking
+     * types, and determining the result type.
+     * 
+     * @param context
+     *            context in which names are resolved.
+     * @return the analyzed (and possibly rewritten) AST subtree.
+     */
+
+    public JExpression analyze(Context context) {
+        lhs = (JExpression) lhs.analyze(context);
+        rhs = (JExpression) rhs.analyze(context);
+        lhs.type().mustMatchExpected(line(), Type.INT);
+        rhs.type().mustMatchExpected(line(), Type.INT);
+        type = Type.INT;
+        return this;
+    }
+
+    /**
+     * Generating code for the << operation involves generating code for the two
+     * operands, and then the shift instruction.
+     * 
+     * @param output
+     *            the code emitter (basically an abstraction for producing the
+     *            .class file).
+     */
+
+    public void codegen(CLEmitter output) {
+        lhs.codegen(output);
+        rhs.codegen(output);
+        output.addNoArgInstruction(ISHL);
+    }
+
+}
+
