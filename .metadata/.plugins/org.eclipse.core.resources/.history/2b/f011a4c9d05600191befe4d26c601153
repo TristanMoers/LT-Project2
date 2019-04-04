@@ -1,0 +1,5 @@
+package packageOfClassToGenerate;
+
+public class ClassToGenerate {
+
+}

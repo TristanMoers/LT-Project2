@@ -1,0 +1,81 @@
+package lingi2132;
+
+import java.util.ArrayList;
+
+import jminusminus.CLEmitter;
+import static jminusminus.CLConstants.*;
+
+
+public class Generator extends GlobalGenerator {
+
+	public Generator(String outputDir) {
+		super(outputDir);
+	}
+	
+	public void generateClass() {
+
+		// instantiate CLEmitter
+		CLEmitter output = new CLEmitter(true);
+		
+		// set destination directory for class
+		output.destinationDir(super.outputDir);
+		
+		// add class
+		ArrayList<String> accessFlags1 = new ArrayList<>(2);
+		accessFlags1.add("public");
+		accessFlags1.add("super");
+		output.addClass(accessFlags1, "packageOfClassToGenerate/ClassToGenerate", "java/lang/Object", null, false);
+	
+		
+		//add constructor
+		ArrayList<String> accessFlags2 = new ArrayList<>(1);
+		accessFlags2.add("public");
+		output.addMethod(accessFlags2, "<init>", "()V", null, false);
+		
+		//add instructions to the above constructor
+		output.addNoArgInstruction(ALOAD_0);
+		output.addMemberAccessInstruction(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+		output.addNoArgInstruction(RETURN);
+
+		
+		//add method
+		ArrayList<String> accessFlags3 = new ArrayList<>(2);
+		accessFlags3.add("public");
+		accessFlags3.add("static");
+		output.addMethod(accessFlags3, "binomialCoefficient", "(II)I", null, false);
+		
+		//add instructions to the above method
+		output.addNoArgInstruction(ILOAD_1);
+		String label1 = output.createLabel();
+		output.addBranchInstruction(IFEQ, label1);
+		output.addNoArgInstruction(ILOAD_1);
+		output.addNoArgInstruction(ILOAD_0);
+		String label2 = output.createLabel();
+		output.addBranchInstruction(IF_ICMPNE, label2);
+		
+		output.addLabel(label1);
+		output.addNoArgInstruction(ICONST_1);
+		output.addNoArgInstruction(IRETURN);
+		
+		output.addLabel(label2);
+		output.addNoArgInstruction(ILOAD_0);
+		output.addNoArgInstruction(ICONST_1);
+		output.addNoArgInstruction(ISUB);
+		output.addNoArgInstruction(ILOAD_1);
+		output.addMemberAccessInstruction(INVOKESTATIC, "packageOfClassToGenerate/ClassToGenerate", "binomialCoefficient", "(II)I");
+		
+		output.addNoArgInstruction(ILOAD_0);
+		output.addNoArgInstruction(ICONST_1);
+		output.addNoArgInstruction(ISUB);
+		output.addNoArgInstruction(ILOAD_1);
+		output.addNoArgInstruction(ICONST_1);
+		output.addNoArgInstruction(ISUB);
+		output.addMemberAccessInstruction(INVOKESTATIC, "packageOfClassToGenerate/ClassToGenerate", "binomialCoefficient", "(II)I");
+
+		output.addNoArgInstruction(IADD);
+		output.addNoArgInstruction(IRETURN);
+		
+		output.write();
+		
+	}
+}
