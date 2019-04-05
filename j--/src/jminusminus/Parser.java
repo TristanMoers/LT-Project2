@@ -998,15 +998,59 @@ public class Parser {
 
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalOrExpression();
+        JExpression lhs = conditionalExpression();
         if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
         } else if (have(PLUS_ASSIGN)) {
             return new JPlusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(MINUS_ASSIGN)) {
+            return new JMinusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(STAR_ASSIGN)) {
+            return new JStarAssignOp(line, lhs, assignmentExpression());
+        } else if (have(DIV_ASSIGN)) {
+            return new JDivAssignOp(line, lhs, assignmentExpression());
+        } else if (have(MOD_ASSIGN)) {
+            return new JModAssignOp(line, lhs, assignmentExpression());
+        } else if (have(AND_ASSIGN)) {
+            return new JAndAssignOp(line, lhs, assignmentExpression());
+        } else if (have(XOR_ASSIGN)) {
+            return new JXorAssignOp(line, lhs, assignmentExpression());
+        } else if (have(OR_ASSIGN)) {
+            return new JOrAssignOp(line, lhs, assignmentExpression());
+        } else if (have(RSHIFT_ASSIGN)) {
+            return new JRShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(LSHIFT_ASSIGN)) {
+            return new JLShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(SHIFT_ASSIGN)) {
+            return new JShiftAssignOp(line, lhs, assignmentExpression());
         } else {
             return lhs;
         }
     }
+
+    /**
+     * Parse a conditional expression.
+     * 
+     * <pre>
+     *   conditionalExpression ::= conditionalOrExpression // level 10
+     *                                  [TERN assignmentExpression TERNELSE conditionalExpression]
+     * </pre>
+     * 
+     * @return an AST for a conditionalExpression.
+     */
+
+    private JExpression conditionalExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = conditionalOrExpression();
+        if (have(TERN)) {
+        	JExpression then = assignmentExpression();
+        	mustBe(TERNELSE);
+        	lhs = new JTernaryOp(line, lhs, then, conditionalExpression());
+        }
+        return lhs;
+    }
+
 
     /**
      * Parse a conditional-or expression.
@@ -1281,7 +1325,7 @@ public class Parser {
      * Parse an unary expression.
      * 
      * <pre>
-     *   unaryExpression ::= INC unaryExpression // level 1
+     *   unaryExpression ::= (INC | DEC | NOT) unaryExpression // level 1
      *                     | MINUS unaryExpression
      *                     | simpleUnaryExpression
      * </pre>
@@ -1322,6 +1366,8 @@ public class Parser {
         int line = scanner.token().line();
         if (have(LNOT)) {
             return new JLogicalNotOp(line, unaryExpression());
+        }else if (have(NOT)) {
+            return new JNotOp(line, unaryExpression());
         } else if (seeCast()) {
             mustBe(LPAREN);
             boolean isBasicType = seeBasicType();

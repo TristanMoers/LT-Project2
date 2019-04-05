@@ -10,7 +10,7 @@ public abstract class GlobalGenerator {
 	}
 	
 	public static void main(String[] args) {
-		GlobalGenerator gen = new Generator(".");
+		GlobalGenerator gen = new Generator(args[0]);
 		gen.generateClass();
 	}
 }	

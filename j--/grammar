@@ -69,8 +69,14 @@ statementExpression ::= expression // but must have side-effect, eg i++
 
 expression ::= assignmentExpression
 
-assignmentExpression ::= conditionalOrExpression  // must be a valid lhs
-                           [(ASSIGN | PLUS_ASSIGN) assignmentExpression]
+assignmentExpression ::= conditionalExpression  // must be a valid lhs
+                           [(ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN |
+                             STAR_ASSIGN | DIV_ASSIGN | MOD_ASSIGN |
+                             AND_ASSIGN | OR_ASSIGN | XOR_ASSIGN |
+                             LSHIFT_ASSIGN | RSHIFT_ASSIGN | SHIFT_ASSIGN) assignmentExpression]
+                             
+conditionalExpression ::= conditionalOrExpression
+							[? assignmentExpression : conditionalExpression]
 
 conditionalOrExpression ::= conditionalAndExpression // level 10
                                {LOR conditionalAndExpression}
@@ -108,6 +114,7 @@ unaryExpression ::= (INC | DEC) unaryExpression  // level 1
                   | simpleUnaryExpression
 
 simpleUnaryExpression ::= LNOT unaryExpression
+						| NOT unaryExpression
                         | LPAREN basicType RPAREN unaryExpression //casted
                         | LPAREN // casted               
                             referenceType

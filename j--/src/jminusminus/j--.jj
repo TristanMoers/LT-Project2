@@ -189,15 +189,29 @@ TOKEN:
 | < LNOT: "!" >
 | < MINUS: "-" >
 | < PLUS_ASSIGN: "+=" >
+| < MINUS_ASSIGN: "-=" >
+| < STAR_ASSIGN: "*=" >
+| < DIV_ASSIGN: "/=" >
+| < MOD_ASSIGN: "%=" >
+| < AND_ASSIGN: "&=" >
+| < XOR_ASSIGN: "^=" >
+| < OR_ASSIGN: "|=" >
+| < RSHIFT_ASSIGN: ">>=" >
+| < LSHIFT_ASSIGN: "<<=" >
+| < SHIFT_ASSIGN: ">>>=" >
 | < STAR: "*" >
 | < DIV: "/" >
 | < MOD: "%" >
 | < SHIFT: ">>>" >
+| < EMPTYBUG: "$$" >
 | < LSHIFT: "<<" >
 | < RSHIFT: ">>" >
 | < OR: "|" >
 | < XOR: "^" >
 | < AND: "&" >
+| < NOT: "~" >
+| < TERN: "?" >
+| < TERNELSE: ":" >
 }
 
 // Separators (these could be combined with the reserved words)
@@ -1143,6 +1157,16 @@ private JExpression expression(): {
  *       conditionalOrExpression // level 13
  *           [( ASSIGN  // conditionalExpression
  *            | PLUS_ASSIGN // must be valid lhs
+ *            | MINUS_ASSIGN // must be valid lhs
+ *            | STAR_ASSIGN // must be valid lhs
+ *            | DIV_ASSIGN // must be valid lhs
+ *            | MOD_ASSIGN // must be valid lhs
+ *            | AND_ASSIGN // must be valid lhs
+ *            | XOR_ASSIGN // must be valid lhs
+ *            | OR_ASSIGN // must be valid lhs
+ *            | RSHIFT_ASSIGN // must be valid lhs
+ *            | LSHIFT_ASSIGN // must be valid lhs
+ *            | SHIFT_ASSIGN // must be valid lhs
  *            )
  *            assignmentExpression]
  * </pre>
@@ -1156,14 +1180,77 @@ private JExpression assignmentExpression(): {
 }
 {
     try {
-        lhs = conditionalOrExpression() { line = lhs.line(); }
+        lhs = conditionalExpression() { line = lhs.line(); }
         [       
             <ASSIGN> 
             rhs = assignmentExpression()
             { lhs = new JAssignOp( line, lhs, rhs ); } |
             <PLUS_ASSIGN>
             rhs = assignmentExpression()
-            { lhs = new JPlusAssignOp( line, lhs, rhs ); }
+            { lhs = new JPlusAssignOp( line, lhs, rhs ); } |
+            <MINUS_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JMinusAssignOp( line, lhs, rhs ); } |
+            <STAR_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JStarAssignOp( line, lhs, rhs ); } |
+            <DIV_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JDivAssignOp( line, lhs, rhs ); } |
+            <MOD_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JModAssignOp( line, lhs, rhs ); } |
+            <AND_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JAndAssignOp( line, lhs, rhs ); } |
+            <XOR_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JXorAssignOp( line, lhs, rhs ); } |
+            <OR_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JOrAssignOp( line, lhs, rhs ); } |
+            <RSHIFT_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JRShiftAssignOp( line, lhs, rhs ); } |
+            <LSHIFT_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JLShiftAssignOp( line, lhs, rhs ); } |
+            <SHIFT_ASSIGN>
+            rhs = assignmentExpression()
+            { lhs = new JShiftAssignOp( line, lhs, rhs ); }
+        ]
+    } 
+    catch ( ParseException e ) { 
+        recoverFromError( new int[] { SEMI, EOF }, e ); 
+    }
+    { return lhs; }
+}
+
+/**
+ * Parse a conditional expression.
+ * 
+ * <pre>
+ *   conditionalExpression ::= conditionalOrExpression // level 12
+ *                                  [TERN assignmentExpression TERNELSE conditionalExpression]
+ * </pre>
+ * 
+ * @return an AST for a conditionalExpression.
+ */
+
+private JExpression conditionalExpression(): {
+    int line = 0;
+    JExpression lhs = null, thenPart = null, elsePart = null;
+}
+{
+    try {
+        lhs = conditionalOrExpression() { line = lhs.line(); }
+        [
+        	LOOKAHEAD( <TERN> assignmentExpression() <TERNELSE> conditionalExpression() )
+            <TERN>
+            thenPart = assignmentExpression()
+            <TERNELSE>
+            elsePart = conditionalExpression()
+            { lhs = new JTernaryOp( line, lhs, thenPart, elsePart ); }
         ]
     } 
     catch ( ParseException e ) { 
@@ -1508,7 +1595,7 @@ private JExpression multiplicativeExpression(): {
  * Parse an unary expression.
  * 
  * <pre>
- *   unaryExpression ::= (INC | DEC) unaryExpression // level 1
+ *   unaryExpression ::= (INC | DEC | NOT) unaryExpression // level 1
  *                     | MINUS unaryExpression
  *                     | simpleUnaryExpression
  * </pre>
@@ -1544,6 +1631,7 @@ private JExpression unaryExpression(): {
  * 
  * <pre>
  *   simpleUnaryExpression ::= LNOT unaryExpression
+ *							 | NOT unaryExpression
  *                           | LPAREN basicType RPAREN 
  *                               unaryExpression
  *                           | LPAREN         
@@ -1565,6 +1653,9 @@ private JExpression simpleUnaryExpression(): {
         <LNOT> { line = token.beginLine; }
         unaryExpr = unaryExpression()
         { expr = new JLogicalNotOp( line, unaryExpr ); } |
+        <NOT> { line = token.beginLine; }
+        unaryExpr = unaryExpression()
+        { expr = new JNotOp( line, unaryExpr ); } |
         LOOKAHEAD( <LPAREN> basicType() <RPAREN> )
         <LPAREN> { line = token.beginLine; }
         type = basicType() 

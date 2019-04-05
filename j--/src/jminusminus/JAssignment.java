@@ -191,3 +191,313 @@ class JPlusAssignOp extends JAssignment {
     }
 
 }
+
+class JMinusAssignOp extends JAssignment {
+
+	public JMinusAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "-=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(ISUB);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JStarAssignOp extends JAssignment {
+
+	public JStarAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "*=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IMUL);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JDivAssignOp extends JAssignment {
+
+	public JDivAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "/=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IDIV);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JModAssignOp extends JAssignment {
+
+	public JModAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "%=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IREM);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JAndAssignOp extends JAssignment {
+
+	public JAndAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "&=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IAND);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JXorAssignOp extends JAssignment {
+
+	public JXorAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "^=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IXOR);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JOrAssignOp extends JAssignment {
+
+	public JOrAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "|=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IOR);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JRShiftAssignOp extends JAssignment {
+
+	public JRShiftAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, ">>=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(ISHR);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JLShiftAssignOp extends JAssignment {
+
+	public JLShiftAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "-=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(ISHL);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}
+
+class JShiftAssignOp extends JAssignment {
+
+	public JShiftAssignOp(int line, JExpression lhs, JExpression rhs) {
+    	super(line, "-=", lhs, rhs);
+	}
+
+
+	public JExpression analyze(Context context) {
+		lhs = (JExpression) lhs.analyze(context);
+		rhs = (JExpression) rhs.analyze(context); 
+		lhs.type().mustMatchExpected(line(), Type.INT);
+		rhs.type().mustMatchExpected(line(), Type.INT); 
+		type = Type.INT;
+		return this; 
+	}
+
+
+	public void codegen(CLEmitter output) {
+		((JLhs) lhs).codegenLoadLhsLvalue(output);
+		((JLhs) lhs).codegenLoadLhsRvalue(output);
+		rhs.codegen(output);
+		output.addNoArgInstruction(IUSHR);
+		
+		if (!isStatementExpression) {
+			// Generate code to leave the r-value atop stack
+			((JLhs) lhs).codegenDuplicateRvalue(output);
+		}
+		((JLhs) lhs).codegenStore(output);
+	}
+}

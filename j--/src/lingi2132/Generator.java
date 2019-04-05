@@ -6,12 +6,12 @@ import jminusminus.CLEmitter;
 
 public class Generator extends GlobalGenerator {
         
-        public Generator(String outputDir) {
-                super(outputDir);
-        }
+	public Generator(String outputDir) {
+		super(outputDir);
+    }
         
         
-        public void generateClass() {
+    public void generateClass() {
         CLEmitter e = new CLEmitter(true);
         e.destinationDir(super.outputDir);
         ArrayList<String> accessFlags = new ArrayList<String>();
@@ -20,15 +20,6 @@ public class Generator extends GlobalGenerator {
         accessFlags.add("public");
         accessFlags.add("super");
         e.addClass(accessFlags, "packageOfClassToGenerate/ClassToGenerate", "java/lang/Object", null, false);
-
-        // Add the implicit no-arg constructor ClassToGenerate()        
-        accessFlags.clear();
-        accessFlags.add("public");
-        e.addMethod(accessFlags, "<init>", "()V", null, false);
-        e.addNoArgInstruction(ALOAD_0);
-        e.addMemberAccessInstruction(INVOKESPECIAL, "java/lang/Object",
-                "<init>", "()V");
-        e.addNoArgInstruction(RETURN);
 
         // Add binomialCoefficient()
         
@@ -40,16 +31,16 @@ public class Generator extends GlobalGenerator {
         accessFlags.add("static");
         e.addMethod(accessFlags, "binomialCoefficient", "(II)I", null, false);
         e.addNoArgInstruction(ILOAD_1);
-        e.addBranchInstruction(IFEQ, "falseLabel1"); // if k == 0
+        e.addBranchInstruction(IFEQ, falseLabel1); // if k == 0
         e.addNoArgInstruction(ILOAD_1);
         e.addNoArgInstruction(ILOAD_0);
-        e.addBranchInstruction(IF_ICMPNE, "falseLabel2"); // if k == n
+        e.addBranchInstruction(IF_ICMPNE, falseLabel2); // if k == n
         
-        e.addLabel("falseLabel1");
+        e.addLabel(falseLabel1);
         e.addNoArgInstruction(ICONST_1);
         e.addNoArgInstruction(IRETURN); // return 1
         
-        e.addLabel("falseLabel2"); // else
+        e.addLabel(falseLabel2); // else
         e.addNoArgInstruction(ILOAD_0);
         e.addNoArgInstruction(ICONST_1);
         e.addNoArgInstruction(ISUB);
@@ -68,7 +59,6 @@ public class Generator extends GlobalGenerator {
         e.addNoArgInstruction(IRETURN);      
         
         e.write();
-   }
-        
+    }    
 
 }

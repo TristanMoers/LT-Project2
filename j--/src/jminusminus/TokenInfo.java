@@ -23,7 +23,10 @@ enum TokenKind {
             "]"), SEMI(";"), COMMA(","), DOT("."), IDENTIFIER("<IDENTIFIER>"), INT_LITERAL(
             "<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"), STRING_LITERAL(
             "<STRING_LITERAL>"), SHIFT(">>>"), LOR("||"), XOR("^"), AND("&"), OR("|"),
-    		LT("<"), GE(">="), RSHIFT(">>"), LSHIFT("<<"), DIV("/"), MOD("%"), NE("!=");
+    		LT("<"), GE(">="), RSHIFT(">>"), LSHIFT("<<"), DIV("/"), MOD("%"), NE("!="),
+    		MINUS_ASSIGN("-="), STAR_ASSIGN("*="), DIV_ASSIGN("/="), MOD_ASSIGN("%="), 
+    		AND_ASSIGN("&="), OR_ASSIGN("^="), XOR_ASSIGN("|="), LSHIFT_ASSIGN("<<="),
+    		RSHIFT_ASSIGN(">>="), SHIFT_ASSIGN(">>>="), NOT("~"), TERN("?"), TERNELSE(":");
 
     /** The token's string representation. */
     private String image;
