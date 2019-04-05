@@ -1140,7 +1140,7 @@ private JExpression expression(): {
  * 
  * <pre>
  *   assignmentExpression ::= 
- *       conditionalAndExpression // level 13
+ *       conditionalOrExpression // level 13
  *           [( ASSIGN  // conditionalExpression
  *            | PLUS_ASSIGN // must be valid lhs
  *            )
@@ -1156,7 +1156,7 @@ private JExpression assignmentExpression(): {
 }
 {
     try {
-        lhs = conditionalAndExpression() { line = lhs.line(); }
+        lhs = conditionalOrExpression() { line = lhs.line(); }
         [       
             <ASSIGN> 
             rhs = assignmentExpression()
@@ -1440,7 +1440,7 @@ private JExpression shiftExpression(): {
  * 
  * <pre>
  *   additiveExpression ::= multiplicativeExpression // level 3
- *                            {MINUS multiplicativeExpression}
+ *                            {(PLUS | MINUS) multiplicativeExpression}
  * </pre>
  * 
  * @return an AST for an additiveExpression.

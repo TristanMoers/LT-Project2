@@ -41,9 +41,6 @@ public class Generator extends GlobalGenerator {
         e.addMethod(accessFlags, "binomialCoefficient", "(II)I", null, false);
         e.addNoArgInstruction(ILOAD_1);
         e.addBranchInstruction(IFEQ, "falseLabel1"); // if k == 0
-        //e.addNoArgInstruction(ICONST_1);
-        //e.addNoArgInstruction(IRETURN); // return 1
-        //e.addLabel("falseLabel1");
         e.addNoArgInstruction(ILOAD_1);
         e.addNoArgInstruction(ILOAD_0);
         e.addBranchInstruction(IF_ICMPNE, "falseLabel2"); // if k == n
@@ -68,12 +65,10 @@ public class Generator extends GlobalGenerator {
         e.addMemberAccessInstruction(INVOKESTATIC, "packageOfClassToGenerate/ClassToGenerate", 
                         "binomialCoefficient", "(II)I");
         e.addNoArgInstruction(IADD);
-        e.addNoArgInstruction(IRETURN);
-        
-      
+        e.addNoArgInstruction(IRETURN);      
         
         e.write();
-        }
+   }
         
 
 }
